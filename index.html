@@ -23,7 +23,6 @@ rgba(0,0,0,0.15); }
 </div>
 <table>
 <thead>
-1
 <tr> <th>Campaign</th> <th>Calls</th> <th>DMCs</th> <th>Sales</th> <th>BTTC</th> <th>DMC Rate
 %</th> <th>Conversion %</th> <th>Calls / Sale</th> </tr>
 </thead>
@@ -53,7 +52,6 @@ const calls =
 Number(row.total_calls || 0);
 const dmcs =
 Number(row.dmcs || 0);
-2
 const sales =
 Number(row.success || 0);
 totalCalls += calls;
@@ -94,7 +92,6 @@ document.getElementById("totalCalls")
 totalCalls.toLocaleString();
 document.getElementById("totalDmcs")
 .textContent =
-3
 totalDmcs.toLocaleString();
 document.getElementById("totalSales")
 .textContent =
