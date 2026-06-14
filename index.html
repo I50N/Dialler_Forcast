@@ -1,0 +1,112 @@
+<!DOCTYPE html> <html> <head> <meta charset="utf-8"> <title>BTTC Dashboard</title>
+<style>
+body{ font-family: Arial, sans-serif; margin:20px; background:#f4f4f4; }
+h1{ margin-bottom:20px; }
+table{ border-collapse:collapse; width:100%; background:white; }
+th{ background:#003366; color:white; padding:10px; text-align:left; }
+td{ padding:8px; border-bottom:1px solid #ddd; }
+tr:hover{ background:#f5f5f5; }
+.kpi-container{ display:flex; gap:15px; margin-bottom:20px; }
+.kpi{ background:white; padding:15px; border-radius:8px; min-width:200px; box-shadow:0 2px 5px
+rgba(0,0,0,0.15); }
+.kpi-value{ font-size:24px; font-weight:bold; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+<h1>BTTC Campaign Dashboard</h1>
+<div class="kpi-container">
+<div class="kpi"> <div>Total Calls</div> <div id="totalCalls" class="kpi-value">0</div> </div>
+<div class="kpi"> <div>Total DMCs</div> <div id="totalDmcs" class="kpi-value">0</div> </div>
+<div class="kpi"> <div>Total Sales</div> <div id="totalSales" class="kpi-value">0</div> </div>
+<div class="kpi"> <div>Overall BTTC</div> <div id="overallBTTC" class="kpi-value">0</div> </div>
+</div>
+<table>
+<thead>
+1
+<tr> <th>Campaign</th> <th>Calls</th> <th>DMCs</th> <th>Sales</th> <th>BTTC</th> <th>DMC Rate
+%</th> <th>Conversion %</th> <th>Calls / Sale</th> </tr>
+</thead>
+<tbody id="campaignTable"> </tbody>
+</table>
+<script>
+const CSV_URL = "https://raw.githubusercontent.com/I50N/BTTC_Dashboard/main/BTTC_Report.csv";
+async function loadData(){
+const response = await fetch(CSV_URL);
+const csvText = await response.text();
+const parsed = Papa.parse(csvText,{
+header:true,
+dynamicTyping:true,
+skipEmptyLines:true
+});
+buildDashboard(parsed.data);
+}
+function buildDashboard(data){
+let totalCalls = 0;
+let totalDmcs = 0;
+let totalSales = 0;
+const tbody =
+document.getElementById("campaignTable");
+tbody.innerHTML = "";
+data.forEach(row => {
+const calls =
+Number(row.total_calls || 0);
+const dmcs =
+Number(row.dmcs || 0);
+2
+const sales =
+Number(row.success || 0);
+totalCalls += calls;
+totalDmcs += dmcs;
+totalSales += sales;
+const bttc =
+dmcs > 0
+? calls / dmcs
+: 0;
+const dmcRate =
+calls > 0
+? (dmcs / calls) * 100
+: 0;
+const conversion =
+dmcs > 0
+? (sales / dmcs) * 100
+: 0;
+const callsPerSale =
+sales > 0
+? calls / sales
+: 0;
+const tr =
+document.createElement("tr");
+tr.innerHTML = `
+<td>${row.campaign_name}</td>
+<td>${calls.toLocaleString()}</td>
+<td>${dmcs.toLocaleString()}</td>
+<td>${sales.toLocaleString()}</td>
+<td>${bttc.toFixed(1)}</td>
+<td>${dmcRate.toFixed(2)}%</td>
+<td>${conversion.toFixed(2)}%</td>
+<td>${callsPerSale.toFixed(0)}</td>
+`;
+tbody.appendChild(tr);
+});
+document.getElementById("totalCalls")
+.textContent =
+totalCalls.toLocaleString();
+document.getElementById("totalDmcs")
+.textContent =
+3
+totalDmcs.toLocaleString();
+document.getElementById("totalSales")
+.textContent =
+totalSales.toLocaleString();
+const overallBTTC =
+totalDmcs > 0
+? totalCalls / totalDmcs
+: 0;
+document.getElementById("overallBTTC")
+.textContent =
+overallBTTC.toFixed(1);
+}
+loadData();
+</script>
+</body> </html>
